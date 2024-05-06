@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDpaint</title>
+</head>
+<body>
+    <h2 id="Text">Перетащите значок на схему</h2>
+    <h2 id="Text1">Нажмите для активации</h2>
+    <input type="file" id="shema" accept="image/jpeg,image/png">    
+    <button type="button" id="but">Подписать схему</button>
+    <button type="button" id="but1">Сброс</button>
+    <canvas id="canvas" width="1100" height="700"></canvas>
+    <canvas id="canvas1" width="30" height="30" style="position: absolute; right: 15%; top: 10%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas2" width="30" height="30" style="position: absolute; right: 19%; top: 10%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas3" width="30" height="30" style="position: absolute; right: 23%; top: 10%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas4" width="380" height="185" style="position: absolute; right: 0.5%; top: 40%; border: 2px solid red;"></canvas>
+    <canvas id="canvas5" width="30" height="30" style="position: absolute; right: 23%; top: 30%; border: 2px solid red;"></canvas>
+    <canvas id="canvas6" width="30" height="30" style="position: absolute; right: 19%; top: 17%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas7" width="30" height="30" style="position: absolute; right: 15%; top: 17%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas8" width="30" height="30" style="position: absolute; right: 19%; top: 30%; border: 2px solid red;"></canvas>
+    <canvas id="canvas9" width="30" height="30" style="position: absolute; right: 23%; top: 17%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas10" width="30" height="30" style="position: absolute; right: 11%; top: 10%; border: 2px solid red;" draggable="true"></canvas>
+    <canvas id="canvas11" width="30" height="30" style="position: absolute; right: 15%; top: 30%; border: 2px solid green;"></canvas> 
+    <canvas id="canvas12" width="30" height="30" style="position: absolute; right: 11%; top: 30%; border: 4px dotted red;"></canvas> 
+    <style>
+        body{
+            background-color: darkolivegreen;
+        }
+        #canvas {
+            position: absolute;
+            left: 1%;
+            border: 2px solid black;
+            width: 68%;
+            height: 85%;
+        }     
+        #but {
+            position: absolute;
+            top: 88%;
+            left: 80%;
+        }
+        #but1 {
+            position: absolute;
+            top: 80%;
+            left: 80%;
+        }
+        #shema {
+            position: absolute;
+            top: 84%;
+            left: 80%;
+        }
+        #Text{
+            position: absolute;
+            top: 1.5%;
+            left: 75%;
+        }        
+        #Text1{
+            position: absolute;
+            top: 22%;
+            left: 75%;
+        }
+    </style>
+    <script type="module">
+        import ("./jspdf.debug.js").then(()=>mod=1).catch((e)=>alert(e));
+        let mod=null;
+        let datC = new Date();
+        let dat = datC.toLocaleString({year:'numeric',month:'long',day: 'numeric', hour: 'numeric',
+        minute: 'numeric'});
+        const fileInput = document.querySelector("input");
+        let sCan = document.getElementById("canvas");       
+        let sCan1 = document.getElementById("canvas1");        
+        let sCan2 = document.getElementById("canvas2");
+        let sCan3 = document.getElementById("canvas3");
+        let sCan4 = document.getElementById("canvas4");
+        let sCan5 = document.getElementById("canvas5");
+        let sCan6 = document.getElementById("canvas6");
+        let sCan7 = document.getElementById("canvas7");
+        let sCan8 = document.getElementById("canvas8");
+        let sCan9 = document.getElementById("canvas9");
+        let sCan10 = document.getElementById("canvas10");
+        let sCan11 = document.getElementById("canvas11");
+        let sCan12 = document.getElementById("canvas12");
+        let can = sCan.getContext("2d");
+        let can1 = sCan1.getContext("2d");        
+        let can2 = sCan2.getContext("2d");
+        let can3 = sCan3.getContext("2d");
+        let can4 = sCan4.getContext("2d");
+        let can5 = sCan5.getContext("2d");
+        let can6 = sCan6.getContext("2d");
+        let can7 = sCan7.getContext("2d");
+        let can8 = sCan8.getContext("2d");
+        let can9 = sCan9.getContext("2d");
+        let can10 = sCan10.getContext("2d");
+        let can11 = sCan11.getContext("2d");
+        let can12 = sCan12.getContext("2d");
+        let img = new Image();
+        let img1 = new Image();
+        let img2 = new Image();
+        let img3 = new Image();        
+        let img5 = new Image();
+        let img6 = new Image();
+        let img7 = new Image();
+        let img8 = new Image();
+        let img9 = new Image();
+        let img10 = new Image();
+        let but = document.getElementById("but");
+        let but1 = document.getElementById("but1");         
+        let count = 0;
+        let xDif;
+        let yDif;
+        let stat;
+        let imgDat;
+        //let imgDat2;
+        let rect1 = sCan.getBoundingClientRect();
+        let xCor1 = rect1.x;
+        let yCor1 = rect1.y;
+        let countZ = null;
+        let xP1;
+        let yP1;
+        let xP2;
+        let yP2;
+        let xP3;
+        let yP3;
+        let xE1;
+        let yE1;
+        let xE2;
+        let yE2;
+        let xE3;
+        let yE3;
+        let xE4;
+        let yE4;
+        let xE5;
+        let yE5;
+        let imgData = null;
+        let imgData2 = null;
+        let imgData3 = null;
+        let imgData6 = null;
+        let imgData7 = null;
+        let imgData9 = null;
+        let imgData10 = null;
+        let countZ2 = null;
+        let countZ3 = null;
+        let countZ4 = null;
+        sCan.width = sCan.clientWidth;
+        sCan.height = sCan.clientHeight;
+        img1.src = "./ognetushitel.jpg";
+        img2.src = "./svarkaN.jpg";
+        img3.src = "./gaz2.jpg";
+        img5.src = "./Strelka.jpg";
+        img6.src = "./ZnakOpasno.jpg";
+        img7.src = "./rozetka.jpg";
+        img8.src = "./zaglushka.jpg"
+        img9.src = "./Tehnika.jpg";
+        img10.src = "./PozOborud.jpg";
+        img1.onload = function(){
+                    can1.drawImage(img1,0,0,sCan1.width,sCan1.height);
+                    can4.drawImage(img1,8,23,20,20);           
+                };
+        img2.onload = function(){
+                    can2.drawImage(img2,0,0,sCan2.width,sCan2.height);
+                    can4.drawImage(img2,8,50,20,20);        
+                };        
+        img3.onload = function(){
+                    can3.drawImage(img3,0,0,sCan3.width,sCan3.height);
+                    can4.drawImage(img3,8,80,20,20);        
+                };
+        img5.onload = function(){
+                    can5.drawImage(img5,0,0,sCan5.width,sCan5.height);
+                    can4.drawImage(img5,8,105,20,20);        
+                };
+        img6.onload = function(){
+                    can6.drawImage(img6,0,0,sCan6.width,sCan6.height);
+                    can4.drawImage(img6,8,129,20,20);        
+                };
+        img7.onload = function(){
+                    can7.drawImage(img7,0,0,sCan7.width,sCan7.height);
+                    can4.drawImage(img7,190,23,20,20);
+                };
+        img8.onload = function(){
+                    can8.drawImage(img8,9,3,10,50);
+                    can4.drawImage(img8,190,50,8,20);
+                };
+        img9.onload = function(){
+                    can9.drawImage(img9,0,0,sCan9.width,sCan9.height);
+                    can4.drawImage(img9,190,80,20,20);          
+                };
+        img10.onload = function(){
+                    can10.drawImage(img10,0,0,sCan10.width,sCan10.height);
+                    can4.drawImage(img10,190,105,20,20);          
+                };        
+        sCan.addEventListener("dragover",alow);
+        sCan.addEventListener("drop",drops);
+        sCan1.addEventListener("dragstart",start);
+        sCan2.addEventListener("dragstart",start2);
+        sCan3.addEventListener("dragstart",start3);
+        sCan6.addEventListener("dragstart",start6);
+        sCan7.addEventListener("dragstart",start7);
+        sCan9.addEventListener("dragstart",start9);
+        sCan10.addEventListener("dragstart",start10);
+        sCan11.addEventListener("click",zone);
+        but1.addEventListener("click",func2);
+        but.addEventListener("click",func);
+        sCan.addEventListener("click",zone1);
+        sCan.addEventListener("click",zoneEv);
+        sCan.addEventListener("click",zaglushka1);
+        sCan12.addEventListener("click",zone2);
+        sCan5.addEventListener("click",evacuation);
+        sCan8.addEventListener("click",zaglushka);
+        canvas11();
+        canvas4();
+
+        function canvas11(){
+            can11.globalAlpha = 0.2;
+            can11.rect(0,0,sCan11.width,sCan11.height);
+            can11.fillStyle = "green";
+            can11.fill();          
+        }
+
+        function evacuation(){
+            if (count===1){
+                countZ3 = 0;
+            }                    
+        }
+
+        function zaglushka(){
+            if (count===1){
+                countZ4 = 0;
+            }                    
+        }
+
+        function zaglushka1(){
+            if (countZ4===0){
+                xE5 = event.clientX - xCor1;
+                yE5 = event.clientY - yCor1;
+                can.beginPath();
+                can.arc(event.clientX - xCor1, event.clientY - yCor1, 1, 0, 2* Math.PI);
+                can.fillStyle = "red";
+                can.fill();
+                return countZ4 = 1,xE5,yE5;
+            }
+            if (countZ4===1){
+                can.beginPath();
+                can.arc(event.clientX - xCor1, event.clientY - yCor1, 5, 0, 2* Math.PI);
+                can.fillStyle = "red";
+                can.fill();
+                can.beginPath();
+                can.strokeStyle = "red";
+                can.lineWidth = 5;
+                can.moveTo(xE5,yE5);
+                can.lineTo(event.clientX - xCor1, event.clientY - yCor1);
+                can.stroke();
+                return countZ4 = null;
+            }
+        }
+
+        function zoneEv(){
+            if(countZ3 === 0){
+                xE1 = event.clientX - xCor1;
+                yE1 = event.clientY - yCor1;
+                can.beginPath();
+                can.arc(event.clientX - xCor1, event.clientY - yCor1, 4, 0, 2* Math.PI);
+                can.fillStyle = "green";
+                can.fill();
+                return countZ3 = 1,xE1,yE1;
+            }
+            if(countZ3 === 1){
+                xE2 = event.clientX - xCor1;
+                yE2 = event.clientY - yCor1;
+                can.beginPath();
+                can.arc(event.clientX - xCor1, event.clientY - yCor1, 2, 0, 2* Math.PI);
+                can.fillStyle = "green";
+                can.fill();
+                can.beginPath();
+                can.strokeStyle = "green";                
+                can.moveTo(xE1,yE1);
+                can.lineTo(xE2, yE2);                            
+                xE3 = xE2 - Math.sin(Math.atan2(xE2 - xE1,yE2 - yE1)+ Math.PI/6)*25;
+                yE3 = yE2 - Math.cos(Math.atan2(xE2 - xE1,yE2 - yE1)+ Math.PI/6)*25;                
+                can.lineTo(xE3, yE3);
+                can.moveTo(xE2,yE2);
+                xE4 = xE2 - Math.sin(Math.atan2(xE2 - xE1,yE2 - yE1) - Math.PI/6)*25
+                yE4 = yE2 - Math.cos(Math.atan2(xE2 - xE1,yE2 - yE1) - Math.PI/6)*25
+                can.lineTo(xE4, yE4);
+                can.stroke();
+                return countZ3 =null;
+            }
+
+        }
+
+        function canvas4(){
+            can4.globalAlpha = 0.5;
+            can4.fillStyle = "green";
+            can4.rect(190,129,20,20)
+            can4.fill();
+            can4.globalAlpha = 1;
+            can4.strokeStyle = "red";
+            can4.setLineDash([3,2]);
+            can4.rect(8,155,20,20);
+            can4.stroke();
+            can4.strokeStyle = "black";
+            can4.setLineDash([]);
+            can4.fillStyle = "black";
+            can4.font = "22px Arial";           
+            can4.fillText("Обозначения:", 1, 18);
+            can4.font = "12px Arial";
+            can4.fillText("Огнетушитель", 33, 37);
+            can4.fillText("Оборудование для ОР", 33, 64);
+            can4.fillText("Отбор проб ГВС", 33, 94);
+            can4.fillText("Пути эвакуации", 33, 120);
+            can4.fillText("Предупредительный знак", 33, 145);
+            can4.fillText("Опасная зона", 33, 171);
+            can4.fillText("Подключение оборудования", 218, 37);
+            can4.fillText("Заглушка", 218, 64);
+            can4.fillText("Расположение техники", 218, 94);
+            can4.fillText("Средства пожаротушения", 218, 120);
+            can4.fillText("Место проведения работ", 218, 145);            
+        }
+
+        function zone2(){
+            if (count===1) {
+                countZ2 = 0;                             
+            }
+        }
+
+        function zone1(event){
+                    if (countZ === 0 || countZ2 === 0 ){
+                        xP1 = event.clientX - xCor1;
+                        yP1 = event.clientY - yCor1;
+                        can.beginPath();
+                        can.arc(event.clientX - xCor1, event.clientY - yCor1, 4, 0, 2* Math.PI);
+                        can.fillStyle = "red";
+                        can.fill();
+                        if (countZ === 0){return countZ = 1,xP1,yP1}                       
+                        if (countZ2 === 0){return countZ2 = 1,xP1,yP1}
+                    }
+                    if (countZ === 1 || countZ2 === 1 ){
+                        can.beginPath();
+                        can.arc(event.clientX - xCor1, event.clientY - yCor1, 4, 0, 2* Math.PI)
+                        can.fillStyle = "red";
+                        can.fill();
+                        xP2 = event.clientX - xCor1;
+                        yP2 = event.clientY - yCor1;
+                        if (countZ === 1){return countZ = 2,xP2,yP2}                                              
+                        if (countZ2 === 1){return countZ2 = 2,xP2,yP2}
+                    }                    
+                    if (countZ === 2 || countZ2 === 2){
+                        can.beginPath();
+                        can.arc(event.clientX - xCor1, event.clientY - yCor1, 4, 0, 2* Math.PI)
+                        can.fillStyle = "red";
+                        can.fill();
+                        xP3 = event.clientX - xCor1;
+                        yP3 = event.clientY - yCor1;
+                        if (countZ === 2){return countZ = 3,xP3,yP3}
+                        if (countZ2 === 2){return countZ2 = 3,xP3,yP3}                       
+                    }
+                    if (countZ === 3 || countZ2 === 3){
+                        can.beginPath();
+                        can.arc(event.clientX - xCor1, event.clientY - yCor1, 4, 0, 2* Math.PI)
+                        can.fillStyle = "red";
+                        can.fill();
+                        if (countZ === 3){
+                            can.beginPath();
+                            can.fillStyle = "green";
+                            can.globalAlpha = 0.3;                        
+                            can.moveTo(xP1,yP1);
+                            can.lineTo(xP2,yP2);
+                            can.lineTo(xP3,yP3);
+                            can.lineTo(event.clientX - xCor1,event.clientY - yCor1);
+                            can.lineTo(xP1,yP1);                        
+                            can.fill();                 
+                            can.globalAlpha = 1; 
+                            return countZ = null;
+                        }
+                        if (countZ2 === 3){
+                            can.beginPath();
+                            can.strokeStyle = "red";
+                            can.lineWidth = 4;
+                            can.setLineDash([10,4]);                     
+                            can.moveTo(xP1,yP1);
+                            can.lineTo(xP2,yP2);
+                            can.lineTo(xP3,yP3);
+                            can.lineTo(event.clientX - xCor1,event.clientY - yCor1);
+                            can.lineTo(xP1,yP1);                        
+                            can.stroke();
+                            can.strokeStyle = "black";
+                            can.lineWidth = 1;
+                            can.setLineDash([]);                                           
+                            return countZ2 = null;
+                        }
+                    }                
+                }
+       
+        function zone(){
+            if (count===1) {
+                countZ = 0;                             
+            }
+        }
+
+        function start6(event){            
+            let rect = sCan6.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 4;
+            return xDif,yDif,stat            
+        }  
+
+        function start7(event){            
+            let rect = sCan7.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 5;
+            return xDif,yDif,stat            
+        }  
+
+        function start9(event){            
+            let rect = sCan9.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 6;
+            return xDif,yDif,stat            
+        } 
+
+        function start10(event){            
+            let rect = sCan10.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 7;
+            return xDif,yDif,stat            
+        } 
+
+        function start2(event){            
+            let rect = sCan2.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 2;
+            return xDif,yDif,stat            
+        }   
+
+        function start3(event){            
+            let rect = sCan3.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 3;
+            return xDif,yDif.stat            
+        }     
+
+        function start(event){            
+            let rect = sCan1.getBoundingClientRect();
+            let xCor = rect.x;
+            let yCor = rect.y;
+            xDif = event.clientX - xCor;            
+            yDif = event.clientY - yCor;
+            stat = 1;
+            return xDif,yDif,stat            
+        }   
+
+        function alow(event){
+            event.preventDefault();
+        }
+
+        function func() {
+            if (count===1 && mod===1){
+                let doc = new jsPDF({orientation: "landscape"}); 
+                doc.setFontSize(14);
+                doc.text(`Spasov Alexey ${dat}`, 200, 205);
+                doc.text("Nariad - Dopusk 777",130, 10,null,null,"center");
+                imgDat = sCan.toDataURL("image/jpeg",1.0);
+                //doc.addImage(imgDat2,'JPEG', 90, 147, 110, 60,'NONE');
+                doc.addImage(imgDat,'JPEG', 3, 15, 260, 160,'NONE');          
+                doc.save("Test.pdf");                       
+            }                                  
+        }
+
+        function func2(){
+            if (count===1){
+                can.restore();
+                can.beginPath();
+                can.clearRect(0, 0, sCan.width, sCan.height);                
+                can.drawImage(img,0,0,(sCan.width),(sCan.height))                
+            }
+        }
+
+        function drops(event){
+            if (count===1){
+                can.globalCompositeOperation = "source-over";          
+                if (stat===1){ 
+                    if(imgData === null){                  
+                        imgData = can1.getImageData(0,0,sCan1.width,sCan1.height);
+                        can.putImageData(imgData, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    } else {
+                        can.putImageData(imgData, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+                if (stat===2){
+                    if (imgData2===null){
+                        imgData2 = can2.getImageData(0,0,sCan2.width,sCan2.height);             
+                        can.putImageData(imgData2, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }else{
+                        can.putImageData(imgData2, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+                if (stat===3){
+                    if(imgData3===null){
+                        imgData3 = can3.getImageData(0,0,sCan3.width,sCan3.height);
+                        can.putImageData(imgData3, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }else{
+                        can.putImageData(imgData3, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+                if (stat===4){
+                    if(imgData6===null){
+                        imgData6 = can6.getImageData(0,0,sCan6.width,sCan6.height);
+                        can.putImageData(imgData6, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                        }else{
+                        can.putImageData(imgData6, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+                if (stat===5){
+                    if(imgData7===null){
+                        imgData7 = can7.getImageData(0,0,sCan7.width,sCan7.height);
+                        can.putImageData(imgData7, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }else{
+                        can.putImageData(imgData7, (event.clientX - xDif-25),(event.clientY - yDif-15));  
+                    }
+                }
+                if (stat===6){
+                    if(imgData9===null){
+                        imgData9 = can9.getImageData(0,0,sCan9.width,sCan9.height);
+                        can.putImageData(imgData9, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }else{
+                        can.putImageData(imgData9, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+                if (stat===7){
+                    if(imgData10===null){
+                        imgData10 = can10.getImageData(0,0,sCan10.width,sCan10.height);
+                        can.putImageData(imgData10, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }else{
+                        can.putImageData(imgData10, (event.clientX - xDif-25),(event.clientY - yDif-15));
+                    }
+                }
+            }  
+        }
+               
+        fileInput.addEventListener("change",func1);      
+        function func1(){
+            count = 0;
+            let readFile = new FileReader();
+            readFile.readAsDataURL(fileInput.files[0]);
+            readFile.onload = function(){        
+                img.src = readFile.result;
+                img.onload = function(){
+                    can.drawImage(img,0,0,(sCan.width),(sCan.height));
+                    can.save();
+                    count = 1;              
+                };               
+            }        
+        }  
+    </script>
+</body>
+</html>
